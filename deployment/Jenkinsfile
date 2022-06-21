@@ -8,7 +8,7 @@ podTemplate(
         containerTemplate(name: "kubectl", image: "lachlanevenson/k8s-kubectl", ttyEnabled: true, command: "cat")
     ],
     //volume mount
-    volums: [
+    volumes: [
         hostPathVolume(hostPath: "/var/run/docker.sock", mouthPath: "/var/run/docker.sock")
     ]
 )
