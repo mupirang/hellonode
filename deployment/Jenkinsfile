@@ -6,6 +6,7 @@ podTemplate(
         //container image는 docker search 명령 이용
         containerTemplate(name: "docker", image: "docker:latest", ttyEnabled: true, command: "cat"),
         containerTemplate(name: "kubectl", image: "lachlanevenson/k8s-kubectl", ttyEnabled: true, command: "cat")
+        containerTemplate(name: "scanner", image: "newtmich/sonar-scanner", ttyEnabled:true, command: "cat")
     ],
     //volume mount
     volumes: [
@@ -32,6 +33,17 @@ podTemplate(
         def selector_val = props["selector_val"]
 
         try {
+            stage("Inspection Code") {
+                container("scanner") {
+                    sh "sonar-scanner \
+                          -Dsonar.projectName=inspect-devops \
+                          -Dsonar.projectKey=inspect-devops \
+                          -Dsonar.sources=. \
+                          -Dsonar.host.url=http://localhost:9000 \
+                          -Dsonar.login=sqp_2f9cd7db9e3548119a4a0d3985e9b4eb46a65d4d"
+                }
+            }
+
             stage("Build Microservice image") {
                 container("docker") {
                     docker.withRegistry("${dockerRegistry}", "${credential_registry}") {
